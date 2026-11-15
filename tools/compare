@@ -1,0 +1,3 @@
+#!/bin/sh
+# Side-by-side page screenshots: reference guide vs current build. Usage: tools/compare <module> <section> <reference.html> [1-18]
+cd "$(dirname "$0")/.." && exec node tools/compare.mjs "$@"

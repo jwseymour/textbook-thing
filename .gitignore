@@ -1,0 +1,13 @@
+# Course materials are copyrighted: never commit them
+sources/
+*.tar
+# Build outputs
+out/
+node_modules/
+__pycache__/
+.venv/
+.DS_Store
+# Reference book downloaded for comparison: copyrighted, never commit
+cgp_textbook_physics.pdf
+# Built PDFs of archived sections
+archive/out/

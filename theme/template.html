@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+/*FONTS*/
+/*KATEX*/
+/*STYLE*/
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>{{BAR}}</b>
+  <nav aria-label="Pages">
+{{NAV}}
+  </nav>
+</div>
+<main class="sheets">
+<!--PAGES-->
+</main>
+<script>
+// Fit A4 sheets to narrow screens (phones). Pure layout; no state stored.
+(function(){
+  function fit(){
+    var w = document.documentElement.clientWidth, pw = 210*96/25.4 + 16;
+    var z = Math.min(1, w / pw);
+    document.querySelectorAll('.page').forEach(function(p){ p.style.zoom = z < 1 ? z : ''; });
+  }
+  window.addEventListener('resize', fit); fit();
+})();
+</script>
+</body>
+</html>

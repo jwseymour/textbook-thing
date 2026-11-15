@@ -1,0 +1,47 @@
+#!/bin/sh
+# Scaffold a new module: tools/new-module <id> "<Title>" <course-page-url>
+# e.g. tools/new-module concdis "IB Concurrent and Distributed Systems" https://www.cl.cam.ac.uk/teaching/2627/ConcDisSys/
+set -e
+cd "$(dirname "$0")/.."
+id="$1"; title="$2"; base="$3"
+if [ -z "$id" ] || [ -z "$title" ] || [ -z "$base" ]; then echo 'usage: tools/new-module <id> "<Title>" <course-page-url/>'; exit 2; fi
+d="modules/$id"
+folder="${title#IB }"  # the module's folder on Drive: check it matches the real folder name
+if [ -e "$d" ]; then echo "$d already exists"; exit 1; fi
+mkdir -p "$d/content" "$d/questions" "$d/checks" "$d/figures/static" "$d/verify"
+cat > "$d/module.yaml" <<EOF
+id: $id
+title: $title
+lecturer: TODO
+year: 2026–27
+materials_page: ${base}materials.html
+# Release target: the module's own folder, relative to the Google Drive desktop sync root ("My Drive").
+drive_folder: "Part IB/$folder"
+# Read the * (non-examinable) markings from the materials page and list them here.
+non_examinable: []
+# Chapters (one per lecture, \`l<nn>\`, theme cgp) are added here as they are written.
+sections: {}
+macros: {}
+EOF
+cat > "$d/sources.yaml" <<EOF
+# Source manifest (see modules/datasci/sources.yaml for a full example).
+# kinds: notes (cite N p12, needs printed_offset) · slides (L3 s7) · sheet (ES1 Q3) · exam · web · data
+base_url: $base
+sources:
+  - {id: Materials, kind: web, url: materials.html, file: materials.html, access: public, title: Course materials page}
+#  - {id: N, kind: notes, url: TODO.pdf, file: notes.pdf, access: raven, printed_offset: 0}
+#  - {id: L1, kind: slides, url: TODO/slides01.pdf, file: slides01.pdf, access: public}
+#tripos:
+#  url: https://www.cl.cam.ac.uk/teaching/exams/pastpapers/y{year}p{paper}q{q}.pdf
+#  file: pp_y{year}p{paper}q{q}.pdf
+#  solution_url: https://www.cl.cam.ac.uk/teaching/exams/solutions/{year}/{year}-p{paper:02d}-q{q:02d}-solutions.pdf
+#  solution_file: sol_y{year}p{paper}q{q}.pdf
+#  paper: 0
+#  questions: {}
+#  solutions: []
+EOF
+cat > "$d/errata.yaml" <<EOF
+# Typos found in the course materials: - {where: "N p5", sections: [s1], text: "..."}
+[]
+EOF
+echo "created $d — next: fill in sources.yaml, run tools/ingest $id, write lectures.yaml (see modules/progc/lectures.yaml), then tools/update $id"

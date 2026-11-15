@@ -1,0 +1,11 @@
+# Source manifest for the demo module. The files are dummies written by modules/demo/dummy/make_sources.py into
+# sources/raw/demo/ (run tools/demo). Citations: `D s3` (slide 3 of the deck), `EX p1` (the exercise sheet).
+base_url: https://example.org/number-systems/
+sources:
+  - {id: D, kind: slides, title: "Number Systems slides (dummy; one slide per page)", file: demo-slides.pdf, access: local, local: sources/raw/demo/demo-slides.pdf}
+  - {id: EX, kind: notes, printed_offset: 0, title: "Number Systems exercise sheet 1 (dummy)", file: demo-exercises.pdf, access: local, local: sources/raw/demo/demo-exercises.pdf}
+
+# "This year's recording" of Lecture 1: dummy captions only (no video). Captions are evidence of what was covered and
+# for how long; they are never quoted or cited.
+transcripts:
+  - {id: V, title: "Lecture captions (dummy)", dir: "demo/captions"}

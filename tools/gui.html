@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Textbooks</title>
+<style>
+:root {
+  --bg: #f6f4ef; --card: #fffdf9; --ink: #22201c; --soft: #6b665d; --line: #e2ddd2; --accent: #b4441f; --accent-ink: #fff;
+  --in: #2f7d4f; --held: #b7791f; --ready: #2b6cb0; --idle: #cfc9bc; --wash: #efebe2; --bad: #b3261e;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #1b1a18; --card: #252320; --ink: #ece8df; --soft: #a39d91; --line: #3a3732; --accent: #e0703f; --accent-ink: #1b1a18;
+    --in: #5fb583; --held: #d9a441; --ready: #6aa5e0; --idle: #4a463f; --wash: #2d2a26; --bad: #ef8a80; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+header.top { display: flex; align-items: center; gap: 12px; padding: 14px 28px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 5; }
+header.top .crumbs { font-weight: 650; font-size: 16px; display: flex; gap: 8px; align-items: center; min-width: 0; }
+header.top .crumbs a { text-decoration: none; }
+header.top .crumbs a:hover { text-decoration: underline; }
+header.top .crumbs .sep { color: var(--soft); font-weight: 400; }
+header.top .job { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--soft); }
+.spin { width: 12px; height: 12px; border: 2px solid var(--idle); border-top-color: var(--accent); border-radius: 50%; animation: sp 0.9s linear infinite; display: inline-block; }
+@keyframes sp { to { transform: rotate(360deg); } }
+main { max-width: 1060px; margin: 0 auto; padding: 28px; }
+h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.01em; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--soft); margin: 32px 0 10px; font-weight: 650; }
+.soft { color: var(--soft); }
+.small { font-size: 13px; }
+.btn { border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 7px 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.btn:hover { border-color: var(--soft); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn[disabled] { opacity: 0.45; cursor: default; pointer-events: none; }
+.layout { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: var(--card); color: inherit; font: inherit; font-size: 13px; padding: 4px 11px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button.on { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.seg button[disabled] { cursor: default; opacity: 0.6; }
+.btn.tiny { padding: 2px 9px; font-size: 12px; border-radius: 6px; }
+
+/* bookshelf */
+.shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 18px; margin-top: 22px; }
+.bookcard { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; grid-template-columns: 120px 1fr; gap: 18px; cursor: pointer; }
+.bookcard:hover { border-color: var(--soft); }
+.cover { width: 120px; aspect-ratio: 210 / 297; border-radius: 4px; border: 1px solid var(--line); background: var(--wash); object-fit: cover; display: block; box-shadow: 0 2px 8px rgb(0 0 0 / 0.08); }
+div.cover { display: flex; align-items: center; justify-content: center; text-align: center; padding: 10px; font-size: 12px; color: var(--soft); box-shadow: none; border-style: dashed; }
+.bookcard h3 { margin: 0 0 2px; font-size: 18px; line-height: 1.25; }
+.bookcard .facts { margin: 10px 0 0; padding: 0; list-style: none; font-size: 13.5px; }
+.bookcard .facts li { margin: 2px 0; }
+.bookcard .acts { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+.strip { display: flex; gap: 3px; margin-top: 10px; flex-wrap: wrap; }
+.strip i { width: 16px; height: 16px; border-radius: 3px; background: var(--idle); display: block; }
+.strip i.in { background: var(--in); } .strip i.held { background: var(--held); } .strip i.writing { background: var(--ready); } .strip i.ready { background: transparent; border: 2px solid var(--ready); }
+.strip i.upcoming, .strip i.skip { background: transparent; border: 1px dashed var(--idle); }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--soft); margin-top: 22px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend .strip { margin: 0; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--idle); }
+.dot.in { background: var(--in); } .dot.held { background: var(--held); } .dot.ready { background: var(--ready); } .dot.bad { background: var(--bad); }
+
+/* book page */
+.bookhead { display: grid; grid-template-columns: 150px 1fr; gap: 26px; align-items: start; }
+.bookhead .cover { width: 150px; }
+.bookhead .acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+.next { margin-top: 16px; background: var(--wash); border-radius: 10px; padding: 12px 16px; }
+.next b { font-weight: 650; }
+.next ul { margin: 0; padding: 0; list-style: none; }
+.next li { margin: 5px 0; display: flex; gap: 10px; align-items: baseline; }
+.next li .dot { flex: none; transform: translateY(-1px); }
+code.say { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; font: 13px ui-monospace, Menlo, monospace; user-select: all; }
+.toc { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.lec { border-top: 1px solid var(--line); }
+.lec:first-child { border-top: 0; }
+.lec > .row { display: grid; grid-template-columns: 34px 62px 1fr auto 84px 18px; gap: 12px; align-items: center; padding: 11px 16px; cursor: pointer; }
+.lec > .row:hover { background: var(--wash); }
+.lec .n { font-weight: 700; font-variant-numeric: tabular-nums; }
+.lec .title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lec.upcoming .title, .lec.skip .title, .lec.upcoming .n { color: var(--soft); }
+.lec .pp { text-align: right; font-variant-numeric: tabular-nums; }
+.lec .chev { color: var(--soft); transition: transform 0.15s; }
+.lec.open .chev { transform: rotate(90deg); }
+.pill { font-size: 12px; padding: 2px 10px; border-radius: 99px; border: 1px solid var(--line); white-space: nowrap; color: var(--soft); }
+.pill.in { background: var(--in); border-color: var(--in); color: #fff; }
+.pill.held { border-color: var(--held); color: var(--held); }
+.pill.ready { border-color: var(--ready); color: var(--ready); }
+.pill.writing { background: var(--ready); border-color: var(--ready); color: #fff; }
+.tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; background: var(--accent); color: var(--accent-ink); }
+.tag.changed { background: var(--held); color: #fff; }
+.detail { display: none; padding: 4px 16px 18px 62px; }
+.lec.open .detail { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 36px; }
+.detail section { min-width: 0; }
+.detail h4 { margin: 14px 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--soft); font-weight: 650; }
+.detail ul { margin: 0; padding-left: 18px; }
+.detail li { margin: 2px 0; }
+.detail .topics { list-style: none; padding: 0; }
+.detail .topics li { display: flex; gap: 10px; align-items: baseline; }
+.detail .topics .p { color: var(--soft); font-variant-numeric: tabular-nums; min-width: 46px; }
+.detail .topics a { text-decoration: none; }
+.detail .topics a:hover { text-decoration: underline; }
+.detail .full { grid-column: 1 / -1; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font-size: 12.5px; background: var(--wash); border-radius: 6px; padding: 1px 8px; }
+.warnline { color: var(--held); }
+.checks { font-size: 13px; color: var(--soft); margin: 10px 2px 0; }
+.checks summary { cursor: pointer; }
+.notes { list-style: none; padding: 0; margin: 0; }
+.notes li { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; display: flex; gap: 12px; align-items: baseline; }
+.notes li .body { flex: 1; min-width: 0; white-space: pre-wrap; }
+.notes li.done { opacity: 0.65; }
+
+/* review */
+.relbar { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: flex; gap: 18px; align-items: center; margin-top: 16px; }
+.relbar .what { flex: 1; min-width: 0; }
+.relbar ul { margin: 4px 0 0; padding-left: 18px; color: var(--bad); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.thumb { cursor: zoom-in; position: relative; }
+.thumb img { width: 100%; aspect-ratio: 210 / 297; display: block; border: 1px solid var(--line); border-radius: 4px; background: #fff; }
+.thumb:hover img { border-color: var(--soft); }
+.thumb .cap { font-size: 12px; color: var(--soft); margin-top: 4px; display: flex; justify-content: space-between; gap: 6px; }
+.thumb .tag { position: absolute; top: 6px; left: 6px; }
+.thumb .noted { position: absolute; top: 6px; right: 6px; background: var(--ready); color: #fff; border-radius: 99px; font-size: 11px; padding: 0 7px; }
+
+/* lightbox */
+#lb { position: fixed; inset: 0; background: rgb(20 18 16 / 0.92); z-index: 20; display: none; grid-template-columns: 1fr 340px; }
+#lb.on { display: grid; }
+#lb .stage { display: flex; align-items: center; justify-content: center; padding: 20px; min-width: 0; min-height: 0; position: relative; }
+#lb .stage img { max-width: 100%; max-height: calc(100vh - 40px); background: #fff; border-radius: 3px; }
+#lb .nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgb(255 255 255 / 0.12); border: 0; color: #fff; width: 42px; height: 64px; border-radius: 8px; font-size: 22px; }
+#lb .nav:hover { background: rgb(255 255 255 / 0.25); }
+#lb .nav.prev { left: 14px; } #lb .nav.next { right: 14px; }
+#lb aside { background: var(--bg); padding: 22px; display: flex; flex-direction: column; gap: 10px; overflow: auto; }
+#lb aside h3 { margin: 0; font-size: 17px; line-height: 1.3; }
+#lb textarea { width: 100%; min-height: 130px; resize: vertical; border: 1px solid var(--line); border-radius: 8px; padding: 10px; font: inherit; background: var(--card); color: var(--ink); }
+#lb .row { display: flex; gap: 8px; align-items: center; }
+
+/* details drawer */
+#drawer { position: fixed; left: 0; right: 0; bottom: 0; height: 44vh; background: #191816; color: #ddd8cc; border-top: 1px solid #000; z-index: 15; display: none; flex-direction: column; }
+#drawer.on { display: flex; }
+#drawer .bar { display: flex; gap: 12px; align-items: center; padding: 8px 16px; font-size: 13px; border-bottom: 1px solid #33302b; }
+#drawer .bar .x { margin-left: auto; background: none; border: 0; color: inherit; font-size: 18px; }
+#drawer pre { margin: 0; padding: 12px 16px; overflow: auto; flex: 1; font: 12px/1.5 ui-monospace, Menlo, monospace; white-space: pre-wrap; }
+.empty { text-align: center; color: var(--soft); padding: 50px 0; }
+@media (max-width: 720px) {
+  main { padding: 16px; } .shelf { grid-template-columns: 1fr; } .bookhead { grid-template-columns: 1fr; }
+  .lec > .row { grid-template-columns: 26px 1fr auto 14px; } .lec .date, .lec .pp { display: none; }
+  .lec.open .detail { grid-template-columns: 1fr; padding-left: 16px; } #lb { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="crumbs" id="crumbs"></div><div class="job" id="job"></div></header>
+<main id="main"><p class="empty">Loading…</p></main>
+<div id="lb"></div>
+<div id="drawer"><div class="bar"><b id="dtitle"></b><span id="dstate"></span><button class="x" onclick="toggleDrawer(false)" aria-label="Close">×</button></div><pre id="dlog"></pre></div>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const md = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+const day = d => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+const when = d => d ? new Date(d).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+const nNew = m => new Set(m.release.changes.flatMap(c => c.shots.map(x => x.sheet))).size; // printed pages, not topics
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const runs = ns => { // 6,7,8,9 → "6–9"
+  const out = []; let a = null, b = null;
+  for (const n of [...ns].sort((x, y) => x - y)) { if (b !== null && n === b + 1) b = n; else { if (a !== null) out.push(a === b ? a : `${a}–${b}`); a = b = n; } }
+  if (a !== null) out.push(a === b ? a : `${a}–${b}`);
+  return out.join(', ');
+};
+const doing = a => (a === 'release' ? 'Releasing' : a === 'layout' ? 'Rebuilding' : 'Updating');
+const range = r => !r ? '' : r[0] === r[1] ? `p.${r[0]}` : `p.${r[0]}–${r[1]}`;
+const store = { get: (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+
+let S = null, lastJson = '', open = new Set(store.get('open', [])), log = '', logSize = 0, lb = null, bust = Date.now(), drawer = false, lastJobEnd = null;
+const route = () => { const [m, v] = location.hash.replace(/^#\/?/, '').split('/'); return { m: m || null, v: v || null }; };
+const mod = id => S && S.modules.find(x => x.id === id);
+const running = m => S && S.job && S.job.running && (!m || S.job.module === m);
+
+async function post(url, body) {
+  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Guide': '1' }, body: JSON.stringify(body || {}) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) alertLine(j.error || 'That did not work.');
+  await poll(true);
+  return r.ok;
+}
+function alertLine(t) { log += `\n[${t}]\n`; toggleDrawer(true); }
+
+// ---------- what to do next, in plain words ----------
+function nextLines(m) {
+  const out = [];
+  const c = m.counts, rel = m.release;
+  if (running(m.id)) out.push({ k: 'ready', h: `<span class="spin"></span> ${doing(S.job.action)}… <button class="btn tiny" onclick="toggleDrawer(true)">Show progress</button>` });
+  for (const L of m.lectures.filter(L => L.status === 'writing')) out.push({ k: 'ready', h: `<span class="spin"></span> <b>Lecture ${L.n} is being written.</b> ${esc(L.why)}` });
+  for (const L of m.lectures.filter(L => L.status === 'held')) out.push({ k: 'held', h: `<b>Lecture ${L.n} is held back.</b> ${esc(L.why)} ${/built|Edited/.test(L.why) ? 'Press Update.' : /checked yet/.test(L.why) ? 'Press Update to check it.' : 'Ask Claude to fix it.'}` });
+  if (m.update && !m.update.ok) for (const s of m.update.steps.filter(s => !s.ok)) out.push({ k: 'bad', h: `<b>The last update had a problem</b> (${esc(s.name)}): ${esc(s.detail)}` });
+  if (m.book && rel.changes.length) out.push({ k: 'in', h: `<b>${plural(nNew(m), 'page')} ${rel.last ? 'new or changed since the last release' : 'not released yet'}.</b> <a href="#/${m.id}/review">Look through them</a>, then release to Drive.` });
+  const ready = m.lectures.filter(L => L.status === 'ready').map(L => L.n);
+  if (ready.length) out.push({ k: 'ready', h: `<b>${ready.length === 1 ? 'Lecture' : 'Lectures'} ${runs(ready)} can be written.</b> In Claude Code, say: <code class="say">write ${m.id} lectures ${runs(ready)}</code> <span class="soft">(about 25 minutes a lecture)</span>` });
+  if (c.waiting) out.push({ k: '', h: `${plural(c.waiting, 'lecture')} waiting for slides or a recording. In Claude Code, say: <code class="say">update ${m.id}</code>` });
+  const open = m.notes.filter(n => n.status === 'open').length;
+  if (open) out.push({ k: 'ready', h: `${plural(open, 'note')} from you waiting for Claude.` });
+  const up = m.lectures.find(L => L.status === 'upcoming');
+  if (up) out.push({ k: '', h: `Next lecture: ${day(up.date)} — ${esc(up.title)}` });
+  if (!out.length) out.push({ k: 'in', h: 'Up to date. Nothing to do.' });
+  return out;
+}
+const stripHtml = m => `<div class="strip" title="One square per lecture">${m.lectures.map(L => `<i class="${L.status}" title="Lecture ${L.n}: ${esc(L.label)}"></i>`).join('')}</div>`;
+const coverHtml = m => m.book && m.book.cover ? `<img class="cover" src="${m.book.cover}?${bust}" alt="">` : `<div class="cover">No chapters yet</div>`;
+const bookFacts = m => m.book ? `${m.book.sheets} pages · Lectures ${runs(m.lectures.filter(L => L.range).map(L => L.n))} of ${m.counts.total}` : `No chapters yet · ${m.counts.total} lectures`;
+
+// ---------- bookshelf ----------
+function shelf() {
+  return `<h1>Textbooks</h1><p class="soft">One book per module. Each grows by a chapter after every lecture.</p>
+  <div class="shelf">${S.modules.map(m => m.error ? `<div class="bookcard"><div class="cover">!</div><div><h3>${esc(m.title)}</h3><p class="small">${esc(m.error)}</p></div></div>` : `
+    <div class="bookcard" onclick="go('#/${m.id}')">
+      ${coverHtml(m)}
+      <div>
+        <h3>${esc(m.bookTitle)}</h3>
+        <div class="soft small">${bookFacts(m)}</div>
+        ${stripHtml(m)}
+        <ul class="facts">${shelfFacts(m).map(f => `<li><span class="dot ${f.k}"></span> ${f.h}</li>`).join('')}</ul>
+        <div class="acts" onclick="event.stopPropagation()">
+          ${m.book ? `<a class="btn primary" href="${m.book.pdf}" target="_blank">Open book</a>` : ''}
+          <a class="btn" href="#/${m.id}">Lectures</a>
+        </div>
+      </div>
+    </div>`).join('')}</div>
+  <div class="legend"><span><span class="strip"><i class="in"></i></span> in the book</span><span><span class="strip"><i class="writing"></i></span> being written</span><span><span class="strip"><i class="held"></i></span> written, held back</span><span><span class="strip"><i class="ready"></i></span> ready to write</span><span><span class="strip"><i></i></span> waiting for materials</span><span><span class="strip"><i class="upcoming"></i></span> not given yet</span></div>`;
+}
+function shelfFacts(m) {
+  const f = [], c = m.counts, rel = m.release;
+  if (running(m.id)) f.push({ k: 'ready', h: `<span class="spin"></span> ${doing(S.job.action)}…` });
+  if (c.writing) f.push({ k: 'ready', h: `<span class="spin"></span> Lecture ${runs(m.lectures.filter(L => L.status === 'writing').map(L => L.n))} being written` });
+  if (c.held) f.push({ k: 'held', h: `${plural(c.held, 'lecture')} held back` });
+  if (m.book) f.push(rel.changes.length ? { k: 'in', h: `${plural(nNew(m), 'page')} ${rel.last ? 'new since the release of ' + day(rel.last.released) : 'not released yet'}` } : { k: 'in', h: `Released ${day(rel.last && rel.last.released)}; nothing new since` });
+  if (c.ready) f.push({ k: 'ready', h: `${plural(c.ready, 'lecture')} ready to write` });
+  if (c.waiting) f.push({ k: '', h: `${plural(c.waiting, 'lecture')} waiting for materials` });
+  if (c.upcoming) f.push({ k: '', h: `${plural(c.upcoming, 'lecture')} still to come` });
+  return f;
+}
+
+// ---------- book page ----------
+function bookPage(m) {
+  const rel = m.release;
+  return `<div class="bookhead">${coverHtml(m)}<div>
+      <h1>${esc(m.bookTitle)}</h1>
+      <div class="soft">${bookFacts(m)}${m.book ? ` · built ${when(m.book.built)}` : ''}${rel.last ? ` · released ${day(rel.last.released)}` : m.book ? ' · never released' : ''}</div>
+      <div class="acts">
+        ${m.book ? `<a class="btn primary" href="${m.book.pdf}" target="_blank">Open book</a>` : ''}
+        ${m.book ? `<a class="btn" href="#/${m.id}/review">Review and release${rel.changes.length ? ` (${nNew(m)} new)` : ''}</a>` : ''}
+        <button class="btn" ${running() || m.counts.writing ? 'disabled' : ''} onclick="run('update','${m.id}')" title="Re-fetches the public files, rebuilds every chapter, checks changed pages (uses Claude for those) and rebuilds the book. It never releases.">Update</button>
+      </div>
+      ${m.book ? `<div class="layout"><span class="soft small">Layout</span><span class="seg">
+        <button class="${m.layout === 'pages' ? 'on' : ''}" ${running() || m.counts.writing ? 'disabled' : ''} onclick="setLayout('${m.id}','pages')" title="Every topic is one whole page or a two-page spread, like the printed CGP book.">Whole-page topics</button>
+        <button class="${m.layout === 'flow' ? 'on' : ''}" ${running() || m.counts.writing ? 'disabled' : ''} onclick="setLayout('${m.id}','flow')" title="Topics follow one another down the pages and may start part-way down a page.">Running on</button>
+      </span>${m.layout !== m.builtLayout && !running(m.id) ? '<span class="soft small">not rebuilt yet: press the button again</span>' : ''}</div>` : ''}
+      <div class="next"><ul>${nextLines(m).map(l => `<li><span class="dot ${l.k}"></span><span>${l.h}</span></li>`).join('')}</ul></div>
+    </div></div>
+    <h2>Lectures</h2>
+    <div class="toc">${m.lectures.map(L => lectureRow(m, L)).join('')}</div>
+    ${m.book && m.book.checked.length ? `<details class="checks"><summary>${m.book.problems.length ? '⚠ The book check found problems' : '✓ Book checked after the last build: order, page numbers and contents page are right'}</summary><ul>${m.book.problems.map(p => `<li class="warnline">${esc(p)}</li>`).join('')}${m.book.checked.map(c => `<li>${esc(c)}</li>`).join('')}</ul></details>` : ''}
+    ${m.update ? `<p class="checks">Last update: ${when(m.update.ran)}. <a href="#" onclick="toggleDrawer(true);return false">Details</a></p>` : ''}
+    ${notesHtml(m)}`;
+}
+function lectureRow(m, L) {
+  const key = `${m.id}/${L.n}`, isOpen = open.has(key);
+  const fresh = L.topics.filter(t => t.change).length;
+  return `<div class="lec ${L.status} ${isOpen ? 'open' : ''}">
+    <div class="row" onclick="toggle('${key}')">
+      <span class="n">${L.n}</span><span class="date soft small">${day(L.date)}</span>
+      <span class="title">${esc(L.title)}</span>
+      <span>${fresh && L.status === 'in' ? `<span class="tag">${m.release.last ? 'updated' : 'new'}</span> ` : ''}<span class="pill ${L.status}">${esc(L.label)}</span></span>
+      <span class="pp">${L.range && m.book ? `<a href="${m.book.pdf}#page=${L.range[0]}" target="_blank" onclick="event.stopPropagation()">${range(L.range)}</a>` : ''}</span>
+      <span class="chev">›</span>
+    </div>
+    ${isOpen ? `<div class="detail">${lectureDetail(m, L)}</div>` : ''}
+  </div>`;
+}
+function lectureDetail(m, L) {
+  const parts = [];
+  if (L.why) parts.push(`<section class="full warnline">${esc(L.why)}</section>`);
+  if (L.note) parts.push(`<section class="full soft small">${esc(L.note)}</section>`);
+  if (L.topics.length) parts.push(`<section><h4>In the book</h4><ul class="topics">${L.topics.map(t => `<li><span class="p">${range([t.sheets[0], t.sheets[t.sheets.length - 1]])}</span><a href="${m.book.pdf}#page=${t.sheets[0]}" target="_blank">${esc(t.title)}</a>${t.change ? `<span class="tag ${t.change}">${t.change}</span>` : ''}</li>`).join('')}</ul></section>`);
+  const c = L.coverage;
+  if (c) parts.push(`<section><h4>What the lecture covered</h4><ul>
+      <li>${c.minutes} minute ${L.delivery === 'prerecorded' ? 'pre-recorded video' : 'recording'}; ${c.shown} of ${c.total} slides shown</li>
+      ${c.longest.length ? `<li>Most time on: ${c.longest.map(s => `${esc(s.title)} (${Math.round(s.seconds / 60) || '<1'} min)`).join('; ')}</li>` : ''}
+      ${c.skipped.length ? `<li>Skipped, so not in the chapter: ${c.skipped.map(s => `${esc(s.title || s.cite)} <span class="soft">(${esc(s.cite)})</span>`).join('; ')}</li>` : ''}
+      ${c.brief.length ? `<li>Only touched on: ${c.brief.map(s => esc(s.title || s.cite)).join('; ')}</li>` : ''}
+    </ul></section>`);
+  else if (L.status !== 'upcoming') parts.push(`<section><h4>What the lecture covered</h4><p class="soft">Not worked out yet (needs the recording).</p></section>`);
+  if (L.exam.length) parts.push(`<section><h4>Past exam questions on this lecture</h4><div class="chips">${L.exam.map(e => `<span class="chip">${esc(e)}</span>`).join('')}</div></section>`);
+  const k = L.checker;
+  if (k) parts.push(`<section><h4>Checking</h4><ul>
+      <li>${k.verified} of ${plural(k.pages, 'page')} independently checked against the slides</li>
+      ${k.found ? `<li>${plural(k.found, 'problem')} found: ${k.fixed} fixed${k.waived ? `, ${k.waived} judged not a problem` : ''}${k.open ? `, <span class="warnline">${k.open} still open</span>` : ''}</li>` : '<li>No problems found</li>'}
+      ${k.majors.map(j => `<li>Serious one${j.status === 'open' ? ' (open)' : ', fixed'}: ${md((j.says || j.quote || '').slice(0, 260))}</li>`).join('')}
+    </ul></section>`);
+  if (L.errata.length) parts.push(`<section class="full"><h4>Mistakes found in the course's own materials</h4><ul>${L.errata.filter((e, i, a) => a.findIndex(x => x.where === e.where) === i).map(e => `<li><b>${esc(e.where)}</b>: ${md(e.text)}</li>`).join('')}</ul></section>`);
+  return parts.join('') || '<section class="full soft">Nothing to show yet.</section>';
+}
+function notesHtml(m) {
+  if (!m.notes.length) return '';
+  return `<h2>Your notes</h2><ul class="notes">${m.notes.slice().reverse().map(n => `<li class="${n.status === 'open' ? '' : 'done'}">
+    <span class="soft small">${day(n.date)}${n.sheet ? ` · p.${n.sheet}` : ''}</span>
+    <span class="body">${esc(n.note)}${n.reply ? `\n<span class="soft">→ ${esc(n.reply)}</span>` : ''}</span>
+    ${n.status === 'open' ? `<span class="pill ready">waiting for Claude</span><button class="btn tiny" onclick="removeNote('${m.id}','${esc(n.id)}')">Remove</button>` : '<span class="pill in">done</span>'}</li>`).join('')}</ul>`;
+}
+
+// ---------- review ----------
+let shots = [];
+function reviewPage(m) {
+  const rel = m.release;
+  shots = rel.changes.flatMap(c => c.shots.map(s => ({ ...s, id: c.id, title: c.title, change: c.change, lecture: c.lecture, kind: c.kind })));
+  shots = shots.filter((x, i) => shots.findIndex(y => y.sheet === x.sheet) === i); // two short topics can share a sheet
+  const groups = [...new Set(rel.changes.map(c => c.lecture))];
+  const can = !rel.blockers.length && !running();
+  const noteCount = sheet => m.notes.filter(n => n.status === 'open' && n.sheet === sheet).length;
+  return `<h1>Review and release</h1>
+    <p class="soft">${rel.changes.length ? `${plural(nNew(m), 'page')} ${rel.last ? `new or changed since the release of ${day(rel.last.released)}` : 'in the book; nothing has been released yet'}. Click a page to read it and leave a note.` : 'Nothing has changed since the last release.'}</p>
+    <div class="relbar"><div class="what">
+        ${rel.blockers.length ? `<b>Not ready to release</b><ul>${rel.blockers.map(b => `<li>${esc(b)}</li>`).join('')}</ul>`
+          : `<b>Ready to release.</b> <span class="soft">Runs every check once more, then copies the PDF to Google Drive: ${esc(rel.dest)}</span>`}
+        ${rel.last ? `<div class="soft small" style="margin-top:4px">Last release: ${when(rel.last.released)}, ${rel.last.sheets} pages. <a href="#" onclick="post('/api/reveal',{module:'${m.id}'});return false">Show in Finder</a></div>` : ''}
+      </div>
+      ${running(m.id) && S.job.action === 'release' ? '<span class="spin"></span>' : ''}
+      <button class="btn primary" ${can ? '' : 'disabled'} onclick="release('${m.id}')">Release to Drive</button>
+    </div>
+    ${groups.map(g => `<h2>Lecture ${g}${(m.lectures.find(L => L.n === g) || {}).title ? ' — ' + esc(m.lectures.find(L => L.n === g).title) : ''}</h2>
+      <div class="grid">${shots.map((s, i) => s.lecture !== g ? '' : `<div class="thumb" onclick="openLb(${i})">
+        <img loading="lazy" src="${s.url}?${bust}" alt="Page ${s.sheet}">
+        <span class="tag ${s.change}">${s.change}</span>${noteCount(s.sheet) ? `<span class="noted">${noteCount(s.sheet)} note${noteCount(s.sheet) > 1 ? 's' : ''}</span>` : ''}
+        <div class="cap"><span>${esc(s.kind === 'answers' ? 'Answers' : s.title)}</span><span>p.${s.sheet}</span></div></div>`).join('')}</div>`).join('')}
+    ${notesHtml(m)}`;
+}
+function openLb(i) { lb = i; renderLb(); }
+function renderLb() {
+  const el = $('#lb'), m = mod(route().m);
+  if (lb == null || !shots[lb] || !m) { el.classList.remove('on'); el.innerHTML = ''; lb = null; return; }
+  const s = shots[lb];
+  const mine = m.notes.filter(n => n.sheet === s.sheet);
+  el.classList.add('on');
+  el.innerHTML = `<div class="stage" onclick="if(event.target===this)closeLb()">
+      <img src="${s.url}?${bust}" alt="Page ${s.sheet}">
+      ${lb > 0 ? '<button class="nav prev" onclick="openLb(lb-1)" aria-label="Previous page">‹</button>' : ''}${lb < shots.length - 1 ? '<button class="nav next" onclick="openLb(lb+1)" aria-label="Next page">›</button>' : ''}
+    </div>
+    <aside>
+      <div class="row"><span class="soft small">Lecture ${s.lecture} · page ${s.sheet} · ${lb + 1} of ${shots.length}</span><button class="btn tiny" style="margin-left:auto" onclick="closeLb()">Close</button></div>
+      <h3>${esc(s.title)}</h3>
+      <a class="small" href="${m.book.pdf}#page=${s.sheet}" target="_blank">Open this page in the PDF</a>
+      ${mine.map(n => `<div class="small" style="background:var(--wash);border-radius:8px;padding:8px 10px;white-space:pre-wrap">${esc(n.note)}<div class="soft">${day(n.date)} · ${n.status === 'open' ? 'waiting for Claude' : 'done'}</div></div>`).join('')}
+      <label class="small soft" for="note">Something wrong or unclear on this page? Claude reads these at the next update.</label>
+      <textarea id="note" placeholder="e.g. The example on the right skips a step."></textarea>
+      <div class="row"><button class="btn primary" onclick="saveNote()">Save note</button><span class="soft small">← → to turn pages</span></div>
+    </aside>`;
+}
+function closeLb() { lb = null; renderLb(); }
+async function saveNote() {
+  const t = $('#note').value.trim(), s = shots[lb];
+  if (!t) return;
+  if (await post('/api/note', { module: route().m, page: s.id, sheet: s.sheet, title: s.title, text: t })) renderLb();
+}
+async function removeNote(m, id) { await post('/api/note-remove', { module: m, id }); }
+document.addEventListener('keydown', e => {
+  if (lb == null || e.target.tagName === 'TEXTAREA') { if (e.key === 'Escape' && lb != null) closeLb(); return; }
+  if (e.key === 'Escape') closeLb();
+  if (e.key === 'ArrowRight' && lb < shots.length - 1) openLb(lb + 1);
+  if (e.key === 'ArrowLeft' && lb > 0) openLb(lb - 1);
+});
+
+// ---------- actions ----------
+function go(h) { location.hash = h; }
+function toggle(key) { open.has(key) ? open.delete(key) : open.add(key); store.set('open', [...open]); render(true); }
+async function setLayout(m, layout) { const x = mod(m); if (x && x.layout === layout && x.builtLayout === layout) return; log = ''; logSize = 0; await post('/api/layout', { module: m, layout }); }
+async function run(action, m) { log = ''; logSize = 0; await post('/api/run', { action, module: m }); }
+async function release(m) {
+  if (!confirm('Release this edition to Google Drive? It replaces the PDF that is there now.')) return;
+  await run('release', m);
+}
+function toggleDrawer(on) { drawer = on; renderJob(); }
+
+// ---------- render ----------
+function render(force) {
+  if (!S) return;
+  const r = route(), m = mod(r.m);
+  $('#crumbs').innerHTML = `<a href="#/">Textbooks</a>` + (m ? `<span class="sep">/</span><a href="#/${m.id}">${esc(m.bookTitle)}</a>` : '') + (m && r.v === 'review' ? `<span class="sep">/</span><span>Review</span>` : '');
+  document.title = m ? `${m.bookTitle} · Textbooks` : 'Textbooks';
+  const y = scrollY;
+  $('#main').innerHTML = !m ? shelf() : m.error ? `<p class="empty">${esc(m.error)}</p>` : r.v === 'review' && m.book ? reviewPage(m) : bookPage(m);
+  if (force) scrollTo(0, y);
+  renderJob();
+}
+function renderJob() {
+  const j = S && S.job;
+  const name = j ? ((mod(j.module) || {}).bookTitle || j.module) : '';
+  $('#job').innerHTML = !j ? '' : j.running
+    ? `<span class="spin"></span> ${doing(j.action)} ${esc(name)}… <button class="btn tiny" onclick="toggleDrawer(!drawer)">Details</button><button class="btn tiny" onclick="post('/api/stop')">Stop</button>`
+    : `<span class="dot ${j.code === 0 ? 'in' : 'bad'}"></span> ${j.action === 'release' ? 'Release' : j.action === 'layout' ? 'Rebuild' : 'Update'} of ${esc(name)} ${j.code === 0 ? 'finished' : 'stopped with a problem'} <button class="btn tiny" onclick="toggleDrawer(!drawer)">Details</button>`;
+  $('#drawer').classList.toggle('on', drawer);
+  if (drawer) {
+    $('#dtitle').textContent = j ? j.title : 'Details';
+    $('#dstate').textContent = j ? (j.running ? 'running…' : j.code === 0 ? 'finished' : 'stopped: see the end of the log') : '';
+    const pre = $('#dlog'), stick = pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 30;
+    const u = (mod(route().m) || {}).update;
+    pre.textContent = log || (u ? `Last update, ${when(u.ran)}\n\n` + u.steps.map(x => `${x.ok ? '✓' : '✗'} ${x.name}: ${x.detail}`).join('\n') : '');
+    if (stick) pre.scrollTop = pre.scrollHeight;
+  }
+}
+async function poll(force) {
+  try {
+    const r = await fetch('/api/status');
+    if (r.status === 503) return; // the server is restarting itself with new code
+    const s = await r.json();
+    if (s.error) throw new Error(s.error);
+    if (s.job) {
+      if (s.job.size < logSize) { log = ''; logSize = 0; }
+      const j = await (await fetch('/api/job?since=' + logSize)).json();
+      if (j.log) { log += j.log; logSize = j.size; }
+      if (s.job.ended && s.job.ended !== lastJobEnd) { lastJobEnd = s.job.ended; bust = Date.now(); if (s.job.code !== 0) drawer = true; }
+      delete s.job.log;
+    }
+    const json = JSON.stringify(s);
+    S = s;
+    if (json !== lastJson || force) { lastJson = json; render(true); if (lb != null && document.activeElement?.id !== 'note' && !$('#note')?.value) renderLb(); } else renderJob();
+  } catch (e) { if (!S) $('#main').innerHTML = `<p class="empty">Cannot reach the GUI server. Start it with <code>tools/gui</code>.</p>`; }
+}
+addEventListener('hashchange', () => { lb = null; renderLb(); render(); scrollTo(0, 0); });
+poll(true);
+setInterval(() => poll(false), 3000);
+</script>
+</body>
+</html>

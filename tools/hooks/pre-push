@@ -1,0 +1,17 @@
+#!/bin/sh
+# Installed as .git/hooks/pre-push by tools/publish (decision 0009). The remote is public and the working branch
+# holds private material, so only the filtered `public` branch may be pushed, and only as the remote's `main`.
+# A commit that shares history with any other local branch is refused as well.
+while read -r lref lsha rref rsha; do
+  if [ "$lref" != "refs/heads/public" ] || [ "$rref" != "refs/heads/main" ]; then
+    echo "pre-push: BLOCKED ($lref → $rref). Only the filtered public branch is pushed: use tools/publish --push." >&2
+    exit 1
+  fi
+  for b in $(git for-each-ref --format='%(refname)' refs/heads | grep -v '^refs/heads/public$'); do
+    if [ -n "$(git merge-base "$lsha" "$b" 2>/dev/null)" ]; then
+      echo "pre-push: BLOCKED. The public branch shares history with $b." >&2
+      exit 1
+    fi
+  done
+done
+exit 0

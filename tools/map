@@ -1,0 +1,3 @@
+#!/bin/sh
+# Course map: units, validation, exam weights, dossiers (decision 0003). Usage: tools/map <module> units|check|dossier <topic>|find "<words>"
+cd "$(dirname "$0")/.." && exec .venv/bin/python tools/map.py "$@"

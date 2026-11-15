@@ -1,0 +1,3 @@
+#!/bin/sh
+# Build a section's HTML + A4 PDF, with lint and overflow checks. Usage: tools/build <module> <section> [--no-pdf] [--no-shots]
+cd "$(dirname "$0")/.." && exec node tools/build.mjs "$@"

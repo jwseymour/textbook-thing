@@ -1,0 +1,3 @@
+#!/bin/sh
+# Bring a module's textbook up to date: everything that does not need Claude to write. Usage: tools/update <module> [--no-fetch] [--no-verify]
+cd "$(dirname "$0")/.." && exec node tools/update.mjs "$@"

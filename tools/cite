@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+// Resolve citations: tools/cite <module> "N p12; L2 s10-11, s15" [--text]
+import { loadIndex, resolveCitation, pageFiles } from './lib/cite.mjs';
+import fs from 'node:fs';
+const [module, src, flag] = process.argv.slice(2);
+if (!module || !src) { console.error('usage: tools/cite <module> "<citation>" [--text]'); process.exit(2); }
+const index = loadIndex(module);
+let bad = 0;
+for (const r of resolveCitation(src, index)) {
+  if (r.error) { bad++; console.log(`✗ ${r.raw}: ${r.error}`); continue; }
+  if (r.type !== 'source') { console.log(`• ${r.raw}: ${r.type}`); continue; }
+  console.log(`✓ ${r.raw} → ${r.id} PDF page(s) ${r.pages.join(', ')}`);
+  for (const f of pageFiles(r, index)) {
+    console.log(`    ${f.png || f.txt}`);
+    if (flag === '--text') console.log(fs.readFileSync(f.txt, 'utf8').split('\n').slice(0, 6).map(l => '      | ' + l).join('\n'));
+  }
+}
+process.exitCode = bad ? 1 : 0;

@@ -1,0 +1,170 @@
+/* ---------- CGP theme (decision 0003). Loaded after style.css when module.yaml sections.<s>.theme is "cgp". ----------
+   Uses macOS system fonts (Gill Sans, Optima, Noteworthy): the books are built on a Mac and Chrome embeds
+   them in the PDF, so the Boox needs nothing installed. */
+.page.cgp{
+  --purple:#5b4390; --purple-t:#ece8f4; --purple-m:#d9d1ea;
+  --green:#c5dc9c; --green-l:#eaf2da; --green-d:#6f9440;
+  --orange:#d9822b; --orange-t:#fcefdc;
+  --blue:#2f6fb0; --blue-t:#e3ecf6;
+  --red:#b8322a; --ink:#1a1a1a;
+  background:#fff;color:var(--ink);display:block;padding:9mm 13mm 0;
+  font-family:Optima,'Source Sans 3',sans-serif;font-size:12.5px;line-height:1.27}
+.page.cgp>.body{display:block}
+.page.cgp .src,.page.cgp .chk{display:none}
+
+/* running head, banner, intro */
+.page.cgp .ph{display:block;text-align:center;height:26px;margin:0;font:17px 'Gill Sans',sans-serif;letter-spacing:0;text-transform:none;color:var(--ink)}
+.page.cgp .ph .tab{background:none;color:inherit;padding:0}
+.page.cgp .ph .sec{display:none}
+.page.cgp.right .ph .tab{visibility:hidden}
+.page.cgp .pfoot{top:9.5mm;bottom:auto;right:13mm;left:auto;font:14px 'Gill Sans',sans-serif;color:var(--ink)}
+.page.cgp.left .pfoot{left:13mm;right:auto}
+.page.cgp .pleft{bottom:6mm;left:13mm;font:13px 'Gill Sans',sans-serif;color:var(--ink)}
+.page.cgp.right .pleft{left:auto;right:13mm}
+.page.cgp .srcline{position:absolute;bottom:6.3mm;right:13mm;max-width:78mm;line-height:1.15;text-align:right;font:9px 'Gill Sans',sans-serif;color:#888}
+.page.cgp.right .srcline{right:auto;left:13mm;text-align:left}
+.page.cgp h1.t{background:var(--purple);color:#fff;font:700 27px/1.15 'Gill Sans',sans-serif;text-align:center;
+  padding:4px 0 5px;margin:0 -4mm 7px;letter-spacing:.2px}
+.page.cgp h1.t span.hlt{background:none;padding:0}
+.page.cgp h1.t.cont{background:none;color:var(--purple);font-size:14.5px;text-align:left;margin:0 0 9px;padding:0 0 3px;border-bottom:2px solid var(--purple)}
+.page.cgp h1.t.cont::after{content:" (continued)";font:italic 400 12.5px Optima,sans-serif;color:#555;letter-spacing:0}
+.page.cgp .intro{font-style:italic;font-size:inherit;color:inherit;border:0;margin:0 4px 7px;padding:0}
+
+/* statement headings and numbered points */
+.page.cgp h2{font:400 16.5px/1.15 'Gill Sans',sans-serif;color:var(--ink);display:table;clear:both;margin:9px 0 6px;
+  padding:3px 13px 4px;background:var(--green);border:1px solid var(--green-d);box-shadow:3px 3px 0 #b9b9b9}
+.page.cgp h2 b{font-weight:700}
+.page.cgp h1.t+h2{margin-top:4px}
+.page.cgp .body>p,.page.cgp .body>ol,.page.cgp .body>ul,.page.cgp .body>.fline{margin-left:14px}
+.page.cgp .body>p{margin-bottom:5px}
+.page.cgp ol{list-style:none;counter-reset:n;padding:0;margin-top:0;margin-bottom:0}
+.page.cgp ol>li{counter-increment:n;position:relative;padding-left:26px;margin:0 0 3.5px}
+.page.cgp ol>li::before{content:counter(n) ")";position:absolute;left:0}
+.page.cgp ul{list-style:none;padding:0;margin:2px 0 0}
+.page.cgp ul>li{position:relative;padding-left:12px;margin:0 0 2px}
+.page.cgp ul>li::before{content:"•";position:absolute;left:0}
+.page.cgp li>p+p,.page.cgp li>p+ul{margin-top:2px}
+.page.cgp .kw{color:var(--purple);font-weight:700}
+.page.cgp .kg{color:#4f7a22;font-weight:700}
+.page.cgp .ko{color:#b9650f;font-weight:700}
+
+/* handwriting, margin notes, formula boxes, figures */
+.page.cgp .hand{font-family:Noteworthy,'Chalkboard SE','Caveat',cursive;font-weight:300;font-size:11.6px;line-height:1.22;color:inherit}
+.page.cgp .note{float:right;clear:right;width:170px;margin:2px 0 6px 14px;text-align:center;padding:9px 11px;
+  font-family:Noteworthy,'Chalkboard SE','Caveat',cursive;font-weight:300;font-size:11.4px;line-height:1.2;
+  background:
+   repeating-linear-gradient(90deg,#333 0 1px,transparent 1px 5px) 7px 0/calc(100% - 14px) 5px no-repeat,
+   repeating-linear-gradient(90deg,#333 0 1px,transparent 1px 5px) 7px 100%/calc(100% - 14px) 5px no-repeat,
+   repeating-linear-gradient(0deg,#333 0 1px,transparent 1px 5px) 0 7px/5px calc(100% - 14px) no-repeat,
+   repeating-linear-gradient(0deg,#333 0 1px,transparent 1px 5px) 100% 7px/5px calc(100% - 14px) no-repeat}
+.page.cgp .note.mistake{color:var(--red)}
+.page.cgp .note.left{float:left;clear:left;margin:2px 14px 6px 0}
+.page.cgp .fline{display:flex;align-items:center;gap:12px;margin-top:5px;margin-bottom:6px;padding-left:26px}
+.page.cgp .fbox{display:inline-block;white-space:nowrap;flex:none;border:1.6px solid var(--blue);background:var(--blue-t);padding:5px 12px;vertical-align:middle}
+.page.cgp .fbox.o{border-color:var(--orange);background:var(--orange-t)}
+.page.cgp .step .fline{padding-left:0;margin:2px 0}
+.page.cgp .figbox{float:right;clear:right;position:relative;background:var(--blue-t);padding:6px 6px 2px;margin:0 0 6px 14px;line-height:0}
+.page.cgp .figbox svg{max-width:100%;height:auto}
+.page.cgp .figbox .lab{position:absolute;font-family:Noteworthy,'Chalkboard SE',cursive;font-weight:300;font-size:11.3px;line-height:1.15}
+.page.cgp .figbox .lab.red{color:var(--red)} .page.cgp .figbox .lab.grey{color:#444} .page.cgp .figbox .lab.blue{color:var(--blue)}
+
+/* worked examples */
+.page.cgp .panel{display:flow-root;clear:both;background:var(--purple-t);padding:8px 12px 6px;margin:6px 0 4px 14px}
+.page.cgp .ex-h{display:flex;gap:9px;align-items:baseline;margin-bottom:6px}
+.page.cgp .ex-h .lab{font-weight:700;color:var(--purple);flex:none}
+.page.cgp .ex-h .q{background:var(--purple-m);border:0;border-radius:7px;padding:3px 9px;margin:0;flex:1}
+.page.cgp .step{display:flex;gap:10px;margin:0 0 3px}
+.page.cgp .step .k{flex:none;width:98px;white-space:nowrap;font-weight:700;color:var(--purple)}
+.page.cgp .step .v{flex:1;min-width:0}
+.page.cgp .katex{font-size:1.04em}
+.page.cgp .katex-display{margin:3px 0}
+
+/* questions and the bottom tip */
+.page.cgp .qh{clear:both;font:700 16.5px 'Gill Sans',sans-serif;color:#fff;background:var(--purple);display:table;padding:1px 10px 2px;margin:9px 0 4px}
+.page.cgp ol.wq{margin-left:16px;counter-reset:n}
+.page.cgp ol.wq>li{padding-left:28px;margin:0 0 3px}
+.page.cgp ol.wq>li::before{content:"Q" counter(n)}
+.page.cgp .exq{background:var(--purple-t);padding:7px 10px 4px 16px;font-family:'Times New Roman',Times,serif;font-size:13px;line-height:1.22}
+.page.cgp .exq .katex{font-size:1em}
+.page.cgp .exq .q{display:flex;gap:8px;margin:0 0 5px;border:0;padding:0}
+.page.cgp .exq .q>.num{flex:none;width:26px}
+.page.cgp .exq .q>.t{flex:1}
+.page.cgp .exq .q>.t ol>li{padding-left:24px;margin:3px 0 0;counter-increment:n}
+.page.cgp .exq .q>.t ol>li::before{content:counter(n,lower-alpha) ")"}
+.page.cgp .exq .mk{flex:none;text-align:right;align-self:flex-end;white-space:nowrap}
+.page.cgp .exq .from{font:10.5px 'Gill Sans',sans-serif;color:#666;margin-left:6px;white-space:nowrap}
+.page.cgp .strip{display:block;clear:both;border:1px solid #555;padding:4px 12px 5px;margin:8px 0 0}
+.page.cgp .strip b{display:block;font:700 17px 'Gill Sans',sans-serif;color:var(--purple);white-space:normal}
+.page.cgp .strip span{font-style:italic;font-size:12.4px;color:inherit}
+
+/* code, pseudocode and tables */
+.page.cgp pre{background:#f3f1ec;color:var(--ink);border-left:3px solid var(--purple);border-radius:0;font-size:10.8px;line-height:1.36;padding:6px 10px;margin:4px 0 4px 14px;overflow:hidden}
+.page.cgp pre .k{color:var(--purple);font-weight:700} .page.cgp pre .c{color:#777;font-style:italic}
+.page.cgp pre.pseudo{font-family:Optima,sans-serif;font-size:12px;line-height:1.3;background:var(--green-l);border-left-color:var(--green-d)}
+.page.cgp pre.pseudo b{color:#3d6a16}
+.page.cgp code{background:#f0ede6;font-size:10.8px;padding:0 3px;border-radius:2px}
+.page.cgp .panel pre{margin-left:0}
+.page.cgp table.cmp{width:auto;border-collapse:collapse;font-size:12px;margin:5px 0 6px 14px}
+.page.cgp table.cmp th,.page.cgp table.cmp td{border:1.2px solid #333;padding:2px 10px;line-height:1.2;text-align:center;vertical-align:middle}
+.page.cgp table.cmp th{background:#dbe6ea;font-weight:700}
+.page.cgp table.cmp td{background:#f1f6f7}
+.page.cgp table.cmp td:first-child{font-weight:700;text-align:left}
+.page.cgp .body>table.cmp{clear:none}
+.page.cgp .twocol{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-left:14px}
+.page.cgp .twocol>*{min-width:0;margin-left:0}
+.page.cgp .twocol table.cmp{margin:2px 0 4px;width:100%}
+.page.cgp .twocol .fline{padding-left:0;margin:4px 0}
+.page.cgp .exq .mk .from{margin:0}
+
+/* ---------- the module book (decision 0004): cover, front matter, answers ---------- */
+.page.cgp.cover .ph,.page.cgp.cover .pfoot,.page.cgp.cover .pleft{display:none}
+/* The front cover, after the cover of a printed revision guide: a dark panel with pale sweeping bands, white rules
+   near the top and the foot, the title in yellow and white, a shield badge, small print below the lower rule.
+   Everything is placed on the sheet itself (the cover has no running head, footer or page number). */
+.page.cgp.cover{padding:0;color:#fff;background:
+  linear-gradient(#fff,#fff) 0 31mm/100% 2.6mm no-repeat,linear-gradient(#fff,#fff) 0 35.2mm/100% .9mm no-repeat,
+  linear-gradient(#fff,#fff) 0 258mm/100% .9mm no-repeat,linear-gradient(#fff,#fff) 0 260.5mm/100% 2.6mm no-repeat,
+  radial-gradient(ellipse 150mm 62mm at 118% 47%,transparent 62%,rgba(150,120,235,.34) 78%,rgba(150,120,235,.10) 92%,transparent 100%),
+  radial-gradient(ellipse 230mm 100mm at 96% 58%,transparent 70%,rgba(128,98,215,.40) 84%,rgba(128,98,215,.08) 96%,transparent 100%),
+  radial-gradient(ellipse 250mm 150mm at 30% 108%,transparent 66%,rgba(110,84,200,.36) 82%,rgba(110,84,200,.06) 95%,transparent 100%),
+  radial-gradient(ellipse 190mm 120mm at -12% 28%,transparent 72%,rgba(96,72,180,.30) 86%,transparent 100%),
+  radial-gradient(ellipse 120% 80% at 70% 52%,#2f1f6e 0,#1d1250 52%,#130b38 100%)}
+.page.cgp.cover>.body{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding-bottom:12.2mm}
+.page.cgp.cover .cv-top{position:absolute;left:14mm;top:8mm;height:20mm;display:flex;align-items:center}
+.page.cgp.cover .cv-mark{font:italic 700 46px/1 Georgia,'Times New Roman',serif;letter-spacing:1px;color:#fff}
+.page.cgp.cover .cv-badge{position:absolute;right:15mm;top:9mm;width:40mm;height:44mm}
+.page.cgp.cover .cv-badge svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
+.page.cgp.cover .cv-badge-t{position:absolute;left:0;right:0;top:9.5mm;text-align:center;color:#2a1a5e;font-family:'Gill Sans',sans-serif;line-height:1.08}
+.page.cgp.cover .cv-badge-t span{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+.page.cgp.cover .cv-badge-t .l1{font-size:19px;font-weight:700;text-transform:none;letter-spacing:0;margin:3px 7mm 2px;line-height:1.02}
+.page.cgp.cover .cv-main{position:absolute;left:15mm;right:15mm;top:58mm}
+.page.cgp.cover .cv-level{font:300 50px/1.05 'Gill Sans',sans-serif;letter-spacing:-.5px}
+.page.cgp.cover h1.t.big{background:none;color:#f6c21c;text-align:left;font:700 64px/1.02 'Gill Sans',sans-serif;letter-spacing:-.5px;padding:0;margin:3px 0 9px;text-wrap:balance}
+.page.cgp.cover h1.t.big.long{font-size:52px}
+.page.cgp.cover .cv-board{font:400 29px/1.15 'Gill Sans',sans-serif}
+.page.cgp.cover .cv-series{position:absolute;left:15mm;right:15mm;bottom:47mm}
+.page.cgp.cover .cv-series .s1{font:300 46px/1.05 'Gill Sans',sans-serif;color:#f6c21c;letter-spacing:-.5px}
+.page.cgp.cover .cv-series .s2{font:700 46px/1.08 'Gill Sans',sans-serif;color:#f6c21c}
+.page.cgp.cover .cv-tag{font:400 21px/1.2 'Gill Sans',sans-serif;text-align:right;margin-top:7px}
+.page.cgp.cover .cv-tag strong,.page.cgp.cover .cv-tag b,.page.cgp.cover .cv-tag em{font:inherit;text-decoration:underline;text-underline-offset:3px;color:inherit}
+.page.cgp.cover .body>.intro,.page.cgp.cover .body>p{position:static;font:400 11px/1.25 'Gill Sans',sans-serif;color:#d9d2f2;text-align:center;background:none;border:0;padding:0;margin:0 22mm}
+.page.cgp table.toc{width:calc(100% - 14px);font-size:12.6px;margin-top:6px}
+.page.cgp table.toc th,.page.cgp table.toc td{text-align:left;padding:3px 9px}
+.page.cgp table.toc td:first-child,.page.cgp table.toc th:first-child{width:64px;text-align:center;white-space:nowrap}
+.page.cgp table.toc.cont{margin-top:0}
+.page.cgp table.toc tr.chap td{background:var(--purple);color:#fff;font:700 13.5px 'Gill Sans',sans-serif;text-align:left;padding:3px 9px}
+.page.cgp table.toc tr.out td{background:#fff;color:#777;font-weight:400}
+.page.cgp table.toc tr.in td{background:var(--green-l)}
+.page.cgp .edition-date{font:italic 12.5px Optima,sans-serif;margin:4px 0 8px 14px}
+.page.cgp[data-kind="answers"] .ans,.page.cgp .ans{font-size:12px;line-height:1.3}
+.page.cgp .ansflow{columns:2;column-gap:20px;margin-left:14px}
+.page.cgp .ans h3{font:700 14px 'Gill Sans',sans-serif;color:var(--purple);margin:6px 0 2px}
+.page.cgp .ans ol>li{padding-left:22px;margin:0 0 2.5px}
+.page.cgp .ans.qa{margin:0 0 8px 14px}
+.page.cgp .ans .q{border-left:3px solid var(--purple);padding:2px 0 2px 10px;margin:0 0 9px}
+.page.cgp .ans .q .ref{font:700 13px 'Gill Sans',sans-serif;color:var(--purple)}
+.page.cgp .ans .q p{margin:2px 0 4px}
+.page.cgp .ans .q pre{margin-left:0}
+
+/* a topic that starts part-way down a sheet (topics flow; pages are filled) */
+.page.cgp .body>h1.t.topic-next{margin-top:22px;padding-top:4px;border-top:0}

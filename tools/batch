@@ -1,0 +1,4 @@
+#!/bin/sh
+# Unattended batch writer: every lecture that is ready to write, one fresh Claude session per step (tools/overnight/run.mjs).
+# Usage: tools/batch [--jobs 3] [--only progc:6,datasci:1] [--modules progc,datasci] [--dry-run]
+cd "$(dirname "$0")/.." && exec caffeinate -ims node tools/overnight/run.mjs "$@"

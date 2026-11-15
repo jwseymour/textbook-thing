@@ -1,0 +1,4 @@
+#!/bin/sh
+# Place every unit of a module's sources in its lecture(s): tools/place <module> [--model sonnet] [--jobs 3] [--limit N]
+m="$1"; shift
+exec "$(dirname "$0")/lectures" "$m" place "$@"

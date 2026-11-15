@@ -1,0 +1,7 @@
+#!/bin/sh
+# Local GUI: the bookshelf, each module's book, review and release. Usage: tools/gui [--port 4747] [--no-open]
+# The server exits with code 75 when its own code has changed; this loop starts the new version in its place.
+cd "$(dirname "$0")/.." || exit 1
+node tools/gui.mjs "$@"; rc=$?
+while [ "$rc" = 75 ]; do node tools/gui.mjs "$@" --no-open; rc=$?; done
+exit "$rc"

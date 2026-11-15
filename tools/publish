@@ -1,0 +1,113 @@
+#!/bin/sh
+# Publish the public part of this repository (decision 0009).
+#
+# The working repository holds two kinds of thing: the pipeline (tools, theme, format docs, the demo module) and the
+# private material built with it (real modules, design notes, the log). Only the first kind may be public. This script
+# never pushes the working branch. It builds a separate branch, `public`, whose commits contain only the paths listed
+# below, taken from the last commit on the current branch, and whose history shares nothing with the private history.
+#
+#   tools/publish                 build/refresh the `public` branch and show what is in it (pushes nothing)
+#   tools/publish --push          the same, then push it to origin as `main`
+#   tools/publish -m "message"    commit message for the public commit
+#
+# A scan runs first and the script stops if anything in the public tree looks personal or course-derived. Extra
+# patterns (names, ids: one extended regex per line) go in .git/info/publish-deny, which is never committed.
+set -e
+cd "$(dirname "$0")/.."
+
+PUBLIC="
+.gitignore
+README.md
+package.json
+package-lock.json
+theme
+tools
+modules/demo
+docs/FORMAT.md
+docs/STYLE_GUIDE.md
+docs/WRITING_A_CHAPTER.md
+"
+# Inside the paths above, these stay private (scripts written for one university's own sites).
+EXCLUDE="tools/harvest"
+
+push=0; msg=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --push) push=1 ;;
+    -m) shift; msg="$1" ;;
+    *) echo "usage: tools/publish [--push] [-m \"message\"]"; exit 2 ;;
+  esac
+  shift
+done
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "note: there are uncommitted changes; only what is committed on $(git rev-parse --abbrev-ref HEAD) is published."
+fi
+
+# 1. The public tree: the allowed paths of HEAD, written with a throwaway index (the working tree is not touched).
+idx="$(mktemp)"; trap 'rm -f "$idx"' EXIT
+export GIT_INDEX_FILE="$idx"
+git read-tree --empty
+for p in $PUBLIC; do git ls-tree -r HEAD -- "$p"; done | grep -v -E "	($(echo $EXCLUDE | tr ' ' '|'))/" | git update-index --index-info
+tree="$(git write-tree)"
+unset GIT_INDEX_FILE
+
+# 2. The scan. Home-directory paths, e-mail addresses, cloud-drive links, and whatever .git/info/publish-deny lists.
+#    The tree is unpacked to a scratch folder and read by python3 (its regex syntax is the same everywhere; a bad
+#    pattern is an error, and any error stops the script before anything is committed).
+scan="$(mktemp -d)"; trap 'rm -rf "$idx" "$scan"' EXIT
+git archive "$tree" | tar -x -C "$scan"
+hits="$(python3 - "$scan" .git/info/publish-deny <<'PY'
+import os, re, sys
+root, extra = sys.argv[1], sys.argv[2]
+pats = [r"/Users/[A-Za-z]", r"/home/[a-z]+/", r"[A-Za-z0-9._-]+@[A-Za-z0-9-]+\.(com|uk|org|net|edu)\b", r"drive\.google\.com", r"docs\.google\.com"]
+if os.path.exists(extra):
+    pats += [l.strip() for l in open(extra) if l.strip() and not l.startswith("#")]
+rx = re.compile("|".join(f"(?:{p})" for p in pats), re.I)
+assert rx.search("/Us" + "ers/x") and rx.search("a.b@" + "example.com")  # the scan itself works (split so it does not find itself)
+for d, _, names in os.walk(root):
+    for n in sorted(names):
+        f = os.path.join(d, n)
+        rel = os.path.relpath(f, root)
+        if rel == "package-lock.json":
+            continue
+        if rx.search(rel):
+            print(f"{rel}: (the file name)")
+        raw = open(f, "rb").read()
+        if b"\0" in raw[:8000]:
+            continue
+        for i, line in enumerate(raw.decode("utf-8", "replace").splitlines(), 1):
+            m = rx.search(line)
+            if m:
+                print(f"{rel}:{i}: {m.group(0)!r} in: {line.strip()[:150]}")
+PY
+)"
+big="$(git ls-tree -r -l "$tree" | awk '$4 > 400000 {print $5 " (" $4 " bytes)"}')"
+docs="$(git ls-tree -r --name-only "$tree" | grep -i -E '\.(pdf|pptx?|docx?|mp4|vtt|srt|tar|zip)$' || true)"
+if [ -n "$hits$big$docs" ]; then
+  echo "NOT PUBLISHED. The public tree would contain:"
+  if [ -n "$hits" ]; then echo "$hits" | cut -c1-240 | sed 's/^/  personal or private text: /'; fi
+  if [ -n "$big" ]; then echo "$big" | sed 's/^/  large file: /'; fi
+  if [ -n "$docs" ]; then echo "$docs" | sed 's/^/  document or media file: /'; fi
+  exit 1
+fi
+
+# 3. Commit it on `public` (a history of its own), unless nothing changed.
+parent="$(git rev-parse -q --verify refs/heads/public || true)"
+if [ -n "$parent" ] && [ "$(git rev-parse "$parent^{tree}")" = "$tree" ]; then
+  echo "public branch is already up to date ($(git rev-parse --short "$parent"))."
+else
+  [ -n "$msg" ] || msg="Update ($(date +%Y-%m-%d))"
+  commit="$(git commit-tree "$tree" ${parent:+-p "$parent"} -m "$msg")"
+  git update-ref refs/heads/public "$commit"
+  echo "public branch → $(git rev-parse --short "$commit"): $(git ls-tree -r --name-only "$tree" | wc -l | tr -d ' ') files"
+  if [ -n "$parent" ]; then git diff --stat "$parent" "$commit" | tail -5; fi
+fi
+
+# 4. Push only that branch. The pre-push hook (tools/hooks/pre-push) refuses anything else.
+if [ "$push" = 1 ]; then
+  cmp -s tools/hooks/pre-push .git/hooks/pre-push || { cp tools/hooks/pre-push .git/hooks/pre-push; chmod +x .git/hooks/pre-push; }
+  git push origin public:main
+else
+  echo "nothing pushed. Look with: git ls-tree -r --name-only public   ·   push with: tools/publish --push"
+fi
